@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {
-    Card, CardImg, CardText, CardBody,
+    Card, CardImg, CardBody,
     CardTitle, CardSubtitle
 } from 'reactstrap';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore from 'swiper';
 import 'swiper/swiper-bundle.css'
 
 import HTTPRequest from '../../helper/httpRequest';
@@ -200,6 +199,7 @@ class CardComponent extends React.Component {
             </div>
                 <SwiperSlide>
                     <Card className="Card">
+                        <div className="Card__bg-top"></div>
                         {
                             this.state.user && (
                                 <>
@@ -207,22 +207,21 @@ class CardComponent extends React.Component {
                                     <CardBody className="Card__body">
                                         <CardSubtitle tag="h6" className="text-muted Card__subtitle">{this.state.currentInfo.title}</CardSubtitle>
                                         <CardTitle tag="h4" className="Card__title">{this.state.currentInfo.content}</CardTitle>
-                                        {/* <CardText className="Card__text">Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
                                         <div className="Card__footer">
                                             <div className="Card__footer-items">
-                                                <span className="Card__footer-item" onClick={() => this.onFooterIconClick(this.infos.user)}>
+                                                <span className={`Card__footer-item ${this.state.currentInfo.title === this.infos.user ? "active" : ""}`} onClick={() => this.onFooterIconClick(this.infos.user)}>
                                                     <i className="fas fa-user"></i>
                                                 </span>
-                                                <span className="Card__footer-item" onClick={() => this.onFooterIconClick(this.infos.born)}>
+                                                <span className={`Card__footer-item ${this.state.currentInfo.title === this.infos.born ? "active" : ""}`} onClick={() => this.onFooterIconClick(this.infos.born)}>
                                                     <i className="far fa-calendar-alt"></i>
                                                 </span>
-                                                <span className="Card__footer-item active" onClick={() => this.onFooterIconClick(this.infos.location)}>
+                                                <span className={`Card__footer-item ${this.state.currentInfo.title === this.infos.location ? "active" : ""}`} onClick={() => this.onFooterIconClick(this.infos.location)}>
                                                     <i className="fas fa-map-marked-alt"></i>
                                                 </span>
-                                                <span className="Card__footer-item" onClick={() => this.onFooterIconClick(this.infos.cell)}>
+                                                <span className={`Card__footer-item ${this.state.currentInfo.title === this.infos.cell ? "active" : ""}`} onClick={() => this.onFooterIconClick(this.infos.cell)}>
                                                     <i className="fas fa-phone-alt"></i>
                                                 </span>
-                                                <span className="Card__footer-item" onClick={() => this.onFooterIconClick(this.infos.lock)}>
+                                                <span className={`Card__footer-item ${this.state.currentInfo.title === this.infos.lock ? "active" : ""}`} onClick={() => this.onFooterIconClick(this.infos.lock)}>
                                                     <i className="fas fa-lock"></i>
                                                 </span>
                                             </div>
