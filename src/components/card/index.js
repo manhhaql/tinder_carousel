@@ -17,10 +17,13 @@ class CardComponent extends React.Component {
             user: null,
             currentInfo: {
                 title: null,
-                content: null
+                content: null,
             },
             favorites: JSON.parse(localStorage.getItem("favorites")),
-            isFavorited: false
+            isFavorited: false,
+            isFetching: false,
+            isLoading: false,
+            
         };
 
         this.infos = {
@@ -30,24 +33,44 @@ class CardComponent extends React.Component {
             cell: "My cellphone number",
             lock: "Lock"
         };
+
+        this._isMounted = false
     };
 
     initUserInfo() {
         this.setState({
-            isFavorited: false
+            isFavorited: false,
+            isFetching: true,
+            isLoading: true
         })
-        HTTPRequest.get({
-        }).then(response => {
-            this.setState({
-                user: response.data.results[0].user,
-                currentInfo: Object.assign({}, this.state.currentInfo, {
-                    title: this.infos.location,
-                    content: response.data.results[0].user.location.street
+        setTimeout(()=> {
+            if(this.state.isFetching) {
+                HTTPRequest.get({
+                }).then(response => {
+                    if(this._isMounted) {
+                        
+                        this.setState({
+                            user: response.data.results[0].user,
+                            currentInfo: Object.assign({}, this.state.currentInfo, {
+                                title: this.infos.location,
+                                content: response.data.results[0].user.location.street
+                            }),
+                            isFetching: false,
+                            isLoading: false
+                        })
+                    }
+                    return
+                }).catch(error => {
+                    console.log(error)
+                    this.setState({
+                        isFetching: false,
+                        isLoading: false
+                    })
                 })
-            })
-        }).catch(error => {
-            console.log(error)
-        })
+            }              
+            
+        }, 100)
+        
     };
 
     onFavoriteImageClick(user) {
@@ -132,12 +155,11 @@ class CardComponent extends React.Component {
         let fav = document.querySelector("#Favorite");
         this.hideFavorite();
         this.getFavorites();
-        setTimeout(() => {
+        setTimeout(()=> {
             if(!fav.classList.contains("show")) {
                 this.initUserInfo()
             }
         })
-        
     };
 
     hideFavorite() {
@@ -160,20 +182,30 @@ class CardComponent extends React.Component {
     };
 
     componentDidMount() {
+        this._isMounted = true;
         this.initUserInfo();
         this.getFavorites();
     };
 
+    componentWillUnmount() {
+        this._isMounted = false
+    }
+
     render() {
         return (
             <>
+            {
+                this.state.isLoading && (
+                    <div className="Loading">Loading...</div>
+                )
+            }
             <Swiper
                 spaceBetween={0}
                 slidesPerView={1}
                 onTouchMove={(event)=>this.swipe(event)}
                 allowSlidePrev = {false}
                 loop = {true}
-                onSlideChange={() => this.onSlideChange()}
+                onSlideChange={() => !this.state.isLoading && this.onSlideChange()}
                 onSwiper={(swiper) => {}}
                 className="Swiper"
             >
@@ -200,6 +232,14 @@ class CardComponent extends React.Component {
                 <SwiperSlide>
                     <Card className="Card">
                         <div className="Card__bg-top"></div>
+                        {
+                            !this.state.user && !this.state.isLoading && (
+                                <div className="Error">
+                                    <h4>Uh Oh!</h4>
+                                    <p>Lets try again!</p>
+                                </div>
+                            )
+                        }
                         {
                             this.state.user && (
                                 <>
